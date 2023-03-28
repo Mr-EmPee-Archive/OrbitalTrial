@@ -4,8 +4,10 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.logger.LogBackendType;
 import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import ml.empee.orbitaltrial.model.dto.AccountDTO;
 import ml.empee.orbitaltrial.utils.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,7 +26,7 @@ public class DatabaseConfig {
 
   @SneakyThrows
   public DatabaseConfig(JavaPlugin plugin) {
-    File dbFile = new File(plugin.getDataFolder(), "safe.sqlite");
+    File dbFile = new File(plugin.getDataFolder(), "db.sqlite");
     String dbURL = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 
     dbFile.getParentFile().mkdirs();
@@ -36,7 +38,7 @@ public class DatabaseConfig {
 
   @SneakyThrows
   private void createTables() {
-    //TableUtils.createTableIfNotExists(connectionSource, VaultData.class);
+    TableUtils.createTableIfNotExists(connectionSource, AccountDTO.class);
   }
 
   @SneakyThrows

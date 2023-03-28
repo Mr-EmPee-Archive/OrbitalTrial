@@ -1,7 +1,7 @@
 package ml.empee.orbitaltrial.utils;
 
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,17 +12,31 @@ import java.net.URLClassLoader;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Translator {
-  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(Translator.class);
-  private static final ResourceBundle bundle;
 
-  static {
-    bundle = getResourceBundle(Locale.getDefault());
+  private static Translator instance;
+
+  public static void init(JavaPlugin plugin) {
+    instance = new Translator(plugin);
+  }
+  public static Translator getInstance() {
+    if(instance == null) {
+      throw new IllegalStateException("The translator hasn't been initialize!");
+    }
+
+    return instance;
+  }
+
+  private final JavaPlugin plugin;
+  private final ResourceBundle bundle;
+
+  public Translator(JavaPlugin plugin) {
+    this.plugin = plugin;
+    this.bundle = getResourceBundle(Locale.getDefault());
   }
 
   @SneakyThrows
-  private static ResourceBundle getResourceBundle(Locale locale) {
+  private ResourceBundle getResourceBundle(Locale locale) {
     File messageFile = new File(plugin.getDataFolder(), "messages.properties");
     if(!messageFile.exists()) {
       messageFile.getParentFile().mkdirs();
@@ -33,13 +47,6 @@ public class Translator {
     return ResourceBundle.getBundle("messages", locale, new URLClassLoader(new URL[]{url}));
   }
 
-  public static String translate(String key) {
-    return bundle.getString(key);
-  }
-  public static String translate(String key, Locale locale) {
-    return getResourceBundle(locale).getString(key);
-  }
-
   private static String[] parseBlock(String input) {
     if(input.endsWith("\n")) {
       input += " ";
@@ -47,11 +54,20 @@ public class Translator {
 
     return input.split("\n");
   }
+
+  public static String translate(String key) {
+    return getInstance().bundle.getString(key);
+  }
+  public static String translate(String key, Locale locale) {
+    return getInstance().getResourceBundle(locale).getString(key);
+  }
+
   public static String[] translateBlock(String key) {
     return parseBlock(translate(key));
   }
   public static String[] translateBlock(String key, Locale locale) {
-    return parseBlock(Translator.translate(key, locale));
+    return parseBlock(translate(key, locale));
   }
+
 
 }

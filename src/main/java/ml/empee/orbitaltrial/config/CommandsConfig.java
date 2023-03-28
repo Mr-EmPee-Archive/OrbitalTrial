@@ -65,4 +65,8 @@ public class CommandsConfig implements Bean {
     commandParser.parse(command);
   }
 
+  public void unregister(String root) {
+    commandManager.deleteRootCommand(root);
+  }
+
 }
